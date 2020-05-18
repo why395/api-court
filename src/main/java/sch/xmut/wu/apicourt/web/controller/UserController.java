@@ -2,6 +2,7 @@ package sch.xmut.wu.apicourt.web.controller;
 
 import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.binarywang.wx.miniapp.bean.WxMaJscode2SessionResult;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,6 +28,7 @@ import java.util.Map;
 /**
  * Created by wu on 2020/04/13
  */
+@Slf4j
 @Controller
 @RequestMapping(value = "/user")
 public class UserController {
@@ -67,6 +69,7 @@ public class UserController {
 
 
     @PostMapping("login")
+    @ResponseBody
     public Object loginByWeixin(@RequestBody WxLoginInfo wxLoginInfo, HttpServletRequest request) {
         String code = wxLoginInfo.getCode();
         UserDto userDto = wxLoginInfo.getUserInfo();
@@ -106,7 +109,6 @@ public class UserController {
         result.put("token", token);
         result.put("userInfo", userDto);
         result.put("userId", user1.getId());
-
 
         return BaseResponse.Success(result);
     }
