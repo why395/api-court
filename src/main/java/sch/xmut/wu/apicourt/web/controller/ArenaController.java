@@ -39,4 +39,11 @@ public class ArenaController {
     public ArenaResponse search(@RequestBody ArenaRequest request) {
         return arenaService.search(request);
     }
+
+    //球馆列表查询 request: arena_name
+    @PostMapping("/collect")
+    @ResponseBody
+    public ArenaResponse collect(@RequestBody ArenaRequest request) {
+        return arenaService.search(request);
+    }
 }
