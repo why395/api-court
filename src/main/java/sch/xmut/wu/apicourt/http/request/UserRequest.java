@@ -1,10 +1,16 @@
 package sch.xmut.wu.apicourt.http.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 
 /**
  * Created by wu on 2020/04/13
  */
+@NoArgsConstructor
+@AllArgsConstructor
+@Accessors(chain = true)
 public class UserRequest {
     @JsonProperty("user_name")
     private String userName;

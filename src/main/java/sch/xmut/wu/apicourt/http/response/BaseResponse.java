@@ -3,6 +3,8 @@ package sch.xmut.wu.apicourt.http.response;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 public class BaseResponse<T> implements Serializable {
     public static final Integer SUCCESS_CODE = 200;
@@ -16,6 +18,14 @@ public class BaseResponse<T> implements Serializable {
     private String message;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private T vo;
+
+    public static Object Success(Object data) {
+        Map<String, Object> obj = new HashMap<String, Object>();
+        obj.put("errno", 0);
+        obj.put("errmsg", "成功");
+        obj.put("data", data);
+        return obj;
+    }
 
     public BaseResponse(Integer statusCode, String status) {
         this.statusCode = statusCode;

@@ -1,10 +1,12 @@
 package sch.xmut.wu.apicourt.service;
 
 import com.alibaba.fastjson.JSONObject;
+import org.hibernate.criterion.Example;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import redis.clients.jedis.Jedis;
@@ -25,6 +27,8 @@ import sch.xmut.wu.apicourt.repository.ArenaRepository;
 import sch.xmut.wu.apicourt.repository.UserBookRepository;
 import sch.xmut.wu.apicourt.repository.UserCollectRepository;
 import sch.xmut.wu.apicourt.repository.UserRepository;
+
+import javax.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -134,4 +138,28 @@ public class UserService {
         response.setCount(userList.size());
         return response;
     }
+
+
+    /**
+     * 这里本身是取openId，但是字段名称不一致。所以查找wechat_number
+     * @param openId
+     * @return
+     */
+    public UserEntity  queryByOid(String openId){
+        Specification<UserEntity> specification = new Specification<UserEntity>() {
+            @Override
+            public Predicate toPredicate(Root<UserEntity> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
+                Path<Object> openIdT = root.get("wechatNumber");
+                Predicate predicate = criteriaBuilder.equal(openIdT, openId);
+                return predicate;
+            }
+        };
+        List<UserEntity> userGroups = userRepository.findAll(specification);
+        if(!CollectionUtils.isEmpty(userGroups)) {
+            return userGroups.get(0);
+        }else {
+            return null;
+        }
+    }
+
 }

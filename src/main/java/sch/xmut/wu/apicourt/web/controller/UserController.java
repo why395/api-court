@@ -1,17 +1,28 @@
 package sch.xmut.wu.apicourt.web.controller;
 
+import cn.binarywang.wx.miniapp.api.WxMaService;
+import cn.binarywang.wx.miniapp.bean.WxMaJscode2SessionResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import sch.xmut.wu.apicourt.entity.UserEntity;
+import sch.xmut.wu.apicourt.http.dto.UserDto;
+import sch.xmut.wu.apicourt.http.dto.WxLoginInfo;
 import sch.xmut.wu.apicourt.http.request.UserBookRequest;
 import sch.xmut.wu.apicourt.http.request.UserCollectRequest;
 import sch.xmut.wu.apicourt.http.request.UserRequest;
 import sch.xmut.wu.apicourt.http.response.BaseResponse;
 import sch.xmut.wu.apicourt.http.response.UserCollectResponse;
 import sch.xmut.wu.apicourt.service.UserService;
+import sch.xmut.wu.apicourt.service.UserTokenManager;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by wu on 2020/04/13
@@ -19,6 +30,9 @@ import sch.xmut.wu.apicourt.service.UserService;
 @Controller
 @RequestMapping(value = "/user")
 public class UserController {
+    @Autowired
+    private WxMaService wxService;
+
     @Autowired
     private UserService userService;
 
@@ -48,5 +62,52 @@ public class UserController {
     @ResponseBody
     public UserCollectResponse collectList() {
         return userService.collectList();
+    }
+
+
+
+    @PostMapping("login")
+    public Object loginByWeixin(@RequestBody WxLoginInfo wxLoginInfo, HttpServletRequest request) {
+        String code = wxLoginInfo.getCode();
+        UserDto userDto = wxLoginInfo.getUserInfo();
+        if (code == null || userDto == null) {
+            throw new  IllegalArgumentException();
+        }
+
+        String sessionKey = null;
+        String openId = null;
+        try {
+            WxMaJscode2SessionResult result = this.wxService.getUserService().getSessionInfo(code);
+            sessionKey = result.getSessionKey();
+            openId = result.getOpenid();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if (sessionKey == null || openId == null) {
+            throw new  IllegalArgumentException();
+        }
+
+        UserEntity user = userService.queryByOid(openId);
+        if (user == null) {
+            UserRequest userRequest =new UserRequest();
+            userRequest.setUserName(userDto.getNickName());
+            userRequest.setWechatNumber(openId);
+            userRequest.setPortrait(userDto.getAvatarUrl());
+            userService.saveUserInfo(userRequest);
+
+        }
+
+        UserEntity user1 = userService.queryByOid(openId);
+        // token
+        String token = UserTokenManager.generateToken(user1.getId());
+
+        Map<Object, Object> result = new HashMap<Object, Object>();
+        result.put("token", token);
+        result.put("userInfo", userDto);
+        result.put("userId", user1.getId());
+
+
+        return BaseResponse.Success(result);
     }
 }
