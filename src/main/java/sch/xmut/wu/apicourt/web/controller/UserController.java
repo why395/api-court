@@ -2,6 +2,7 @@ package sch.xmut.wu.apicourt.web.controller;
 
 import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.binarywang.wx.miniapp.bean.WxMaJscode2SessionResult;
+import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -9,6 +10,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import redis.clients.jedis.Jedis;
+import sch.xmut.wu.apicourt.constant.CacheConstant;
 import sch.xmut.wu.apicourt.entity.UserEntity;
 import sch.xmut.wu.apicourt.http.dto.UserDto;
 import sch.xmut.wu.apicourt.http.dto.WxLoginInfo;
@@ -109,7 +112,8 @@ public class UserController {
         result.put("token", token);
         result.put("userInfo", userDto);
         result.put("userId", user1.getId());
-
+        Jedis jedis = new Jedis("localhost", 6379);
+        jedis.set(CacheConstant.USER_INFO_KEY, JSON.toJSONString(user1));
         return BaseResponse.Success(result);
     }
 }
