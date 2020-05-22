@@ -1,5 +1,6 @@
 package sch.xmut.wu.apicourt.service;
 
+import com.alibaba.fastjson.JSONObject;
 import com.aliyun.oss.OSSClient;
 import com.aliyun.oss.model.ObjectMetadata;
 import org.apache.commons.codec.binary.Base64;
@@ -12,9 +13,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
+import redis.clients.jedis.Jedis;
+import sch.xmut.wu.apicourt.constant.CacheConstant;
 import sch.xmut.wu.apicourt.entity.ApiOssEntity;
 import sch.xmut.wu.apicourt.entity.ArenaEntity;
 import sch.xmut.wu.apicourt.entity.CourtEntity;
+import sch.xmut.wu.apicourt.entity.ArenaCommentEntity;
+import sch.xmut.wu.apicourt.entity.UserEntity;
 import sch.xmut.wu.apicourt.http.request.ArenaRequest;
 import sch.xmut.wu.apicourt.http.response.ArenaResponse;
 import sch.xmut.wu.apicourt.http.response.BaseResponse;
@@ -22,13 +27,18 @@ import sch.xmut.wu.apicourt.http.response.LayerResponse;
 import sch.xmut.wu.apicourt.http.response.OssImageResponse;
 import sch.xmut.wu.apicourt.http.vo.ApiOss;
 import sch.xmut.wu.apicourt.http.vo.Arena;
+import sch.xmut.wu.apicourt.http.vo.ArenaComment;
 import sch.xmut.wu.apicourt.http.vo.Court;
+import sch.xmut.wu.apicourt.http.vo.User;
 import sch.xmut.wu.apicourt.repository.ApiOssRepository;
 import sch.xmut.wu.apicourt.repository.ArenaRepository;
 import sch.xmut.wu.apicourt.repository.CourtRepository;
+import sch.xmut.wu.apicourt.repository.ArenaCommentRepository;
+import sch.xmut.wu.apicourt.repository.UserRepository;
+import sch.xmut.wu.apicourt.utils.SystemUtils;
+
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -51,6 +61,10 @@ public class ArenaService {
     private CourtRepository courtRepository;
     @Autowired
     private ApiOssRepository apiOssRepository;
+    @Autowired
+    private ArenaCommentRepository arenaCommentRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     public ArenaResponse list(ArenaRequest request) {
         ArenaResponse response = new ArenaResponse();
@@ -155,6 +169,21 @@ public class ArenaService {
             courtList.add(court);
         }
         response.setCourtList(courtList);
+        List<ArenaComment> arenaCommentList = new ArrayList<>();
+        List<ArenaCommentEntity> arenaCommentEntityList = arenaCommentRepository.findAllByArenaId(request.getArenaId());
+        for (ArenaCommentEntity arenaCommentEntity : arenaCommentEntityList) {
+            ArenaComment arenaComment = new ArenaComment();
+            arenaComment.setUserId(arenaCommentEntity.getUserId());
+            Optional<UserEntity> userEntityOptional = userRepository.findById(arenaCommentEntity.getUserId());
+            if (userEntityOptional.isPresent()) {
+                arenaComment.setUserName(userEntityOptional.get().getUserName());
+                arenaComment.setPortrait(userEntityOptional.get().getPortrait());
+            }
+            arenaComment.setCommentTime(SystemUtils.formatDate2(arenaCommentEntity.getCommentTime()));
+            arenaComment.setCommentText(arenaCommentEntity.getCommentText());
+            arenaCommentList.add(arenaComment);
+        }
+        response.setArenaCommentList(arenaCommentList);
         return response;
     }
 
@@ -272,5 +301,17 @@ public class ArenaService {
             return "image/jpeg";
         }
         return null;
+    }
+
+    public BaseResponse addComment(Integer arenaId, String comment) {
+        Jedis jedis = new Jedis("localhost", 6379);
+        User user = JSONObject.parseObject(jedis.get(CacheConstant.USER_INFO_KEY), User.class);
+        ArenaCommentEntity userCommentEntity = new ArenaCommentEntity();
+        userCommentEntity.setArenaId(arenaId);
+        userCommentEntity.setCommentText(comment);
+        userCommentEntity.setCommentTime(new Date());
+        userCommentEntity.setUserId(user.getId());
+        arenaCommentRepository.save(userCommentEntity);
+        return new BaseResponse();
     }
 }
