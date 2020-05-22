@@ -32,7 +32,7 @@ public class Arena implements Serializable {
     private Double singleScore;
     @JsonProperty("price")    //价格
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private Double price;
+    private Integer price;
     @JsonProperty("status_str")
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String statusStr;
@@ -128,11 +128,11 @@ public class Arena implements Serializable {
         this.singleScore = singleScore;
     }
 
-    public Double getPrice() {
+    public Integer getPrice() {
         return price;
     }
 
-    public void setPrice(Double price) {
+    public void setPrice(Integer price) {
         this.price = price;
     }
 

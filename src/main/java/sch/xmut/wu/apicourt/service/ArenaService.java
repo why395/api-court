@@ -28,6 +28,7 @@ import sch.xmut.wu.apicourt.repository.ArenaRepository;
 import sch.xmut.wu.apicourt.repository.CourtRepository;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -131,9 +132,9 @@ public class ArenaService {
                 //球馆均价计算方式
                 countTemp3 = countTemp3 + (courtEntity.getRentWork() + courtEntity.getRentWeekend())/2;
             }
-            arena.setSingleScore(countTemp1/courtEntityList.size());
-            arena.setTotalScore(countTemp2/courtEntityList.size());
-            arena.setPrice(countTemp3/courtEntityList.size());
+            arena.setSingleScore(Double.valueOf(String.format("%.2f", countTemp1/courtEntityList.size())));
+            arena.setTotalScore(Double.valueOf(String.format("%.2f", countTemp2/courtEntityList.size())));
+            arena.setPrice((int) (countTemp3/courtEntityList.size()));
         }
     }
 
