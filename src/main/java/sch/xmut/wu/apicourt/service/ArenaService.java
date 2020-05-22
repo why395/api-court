@@ -28,7 +28,6 @@ import sch.xmut.wu.apicourt.repository.ArenaRepository;
 import sch.xmut.wu.apicourt.repository.CourtRepository;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -113,24 +112,28 @@ public class ArenaService {
         for (ArenaEntity arenaEntity : arenaEntityList) {
             Arena arena = new Arena();
             BeanUtils.copyProperties(arenaEntity, arena);
-            List<CourtEntity> courtEntityList = courtRepository.findAllByArenaId(arenaEntity.getId());//查询该球馆的所有球场
-            if (!CollectionUtils.isEmpty(courtEntityList)) {
-                Double countTemp1 = 0.0;
-                Double countTemp2 = 0.0;
-                Double countTemp3 = 0.0;
-                for (CourtEntity courtEntity : courtEntityList) {
-                    //球馆评分计算方式
-                    countTemp1 = countTemp1 + courtEntity.getScore();
-                    //球馆综合分计算方式
-                    countTemp2 = countTemp2 + (courtEntity.getRentWork() + courtEntity.getRentWeekend())/2 - courtEntity.getScore()*10;
-                    //球馆均价计算方式
-                    countTemp3 = countTemp3 + (courtEntity.getRentWork() + courtEntity.getRentWeekend())/2;
-                }
-                arena.setSingleScore(countTemp1/courtEntityList.size());
-                arena.setTotalScore(countTemp2/courtEntityList.size());
-                arena.setPrice(countTemp3/courtEntityList.size());
-            }
+            buildCommon(arena);
             arenaList.add(arena);
+        }
+    }
+
+    private void buildCommon(Arena arena) {
+        List<CourtEntity> courtEntityList = courtRepository.findAllByArenaId(arena.getId());//查询该球馆的所有球场
+        if (!CollectionUtils.isEmpty(courtEntityList)) {
+            Double countTemp1 = 0.0;
+            Double countTemp2 = 0.0;
+            Double countTemp3 = 0.0;
+            for (CourtEntity courtEntity : courtEntityList) {
+                //球馆评分计算方式
+                countTemp1 = countTemp1 + courtEntity.getScore();
+                //球馆综合分计算方式
+                countTemp2 = countTemp2 + (courtEntity.getRentWork() + courtEntity.getRentWeekend())/2 - courtEntity.getScore()*10;
+                //球馆均价计算方式
+                countTemp3 = countTemp3 + (courtEntity.getRentWork() + courtEntity.getRentWeekend())/2;
+            }
+            arena.setSingleScore(countTemp1/courtEntityList.size());
+            arena.setTotalScore(countTemp2/courtEntityList.size());
+            arena.setPrice(countTemp3/courtEntityList.size());
         }
     }
 
@@ -140,6 +143,7 @@ public class ArenaService {
         if (arenaEntityOptional.isPresent()) {
             Arena arena = new Arena();
             BeanUtils.copyProperties(arenaEntityOptional.get(), arena);
+            buildCommon(arena);
             response.setArena(arena);
         }
         List<CourtEntity> courtEntityList = courtRepository.findAllByArenaId(request.getArenaId());
