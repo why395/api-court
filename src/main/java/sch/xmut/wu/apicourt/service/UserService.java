@@ -1,7 +1,6 @@
 package sch.xmut.wu.apicourt.service;
 
 import com.alibaba.fastjson.JSONObject;
-import org.hibernate.criterion.Example;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -12,6 +11,7 @@ import org.springframework.util.CollectionUtils;
 import redis.clients.jedis.Jedis;
 import sch.xmut.wu.apicourt.constant.CacheConstant;
 import sch.xmut.wu.apicourt.entity.ArenaEntity;
+import sch.xmut.wu.apicourt.entity.CourtEntity;
 import sch.xmut.wu.apicourt.entity.UserBookEntity;
 import sch.xmut.wu.apicourt.entity.UserCollectEntity;
 import sch.xmut.wu.apicourt.entity.UserEntity;
@@ -20,14 +20,17 @@ import sch.xmut.wu.apicourt.http.request.UserCollectRequest;
 import sch.xmut.wu.apicourt.http.request.UserRequest;
 import sch.xmut.wu.apicourt.http.response.BaseResponse;
 import sch.xmut.wu.apicourt.http.response.LayerResponse;
+import sch.xmut.wu.apicourt.http.response.UserBookResponse;
 import sch.xmut.wu.apicourt.http.response.UserCollectResponse;
 import sch.xmut.wu.apicourt.http.vo.Arena;
+import sch.xmut.wu.apicourt.http.vo.Order;
 import sch.xmut.wu.apicourt.http.vo.User;
 import sch.xmut.wu.apicourt.repository.ArenaRepository;
+import sch.xmut.wu.apicourt.repository.CourtRepository;
 import sch.xmut.wu.apicourt.repository.UserBookRepository;
 import sch.xmut.wu.apicourt.repository.UserCollectRepository;
 import sch.xmut.wu.apicourt.repository.UserRepository;
-
+import sch.xmut.wu.apicourt.utils.SystemUtils;
 import javax.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.Date;
@@ -47,6 +50,8 @@ public class UserService {
     private UserCollectRepository userCollectRepository;
     @Autowired
     private ArenaRepository arenaRepository;
+    @Autowired
+    private CourtRepository courtRepository;
 
     public BaseResponse saveUserInfo(UserRequest request) {
         UserEntity userEntity = new UserEntity();
@@ -162,4 +167,28 @@ public class UserService {
         }
     }
 
+    public UserBookResponse orderList() {
+        UserBookResponse response = new UserBookResponse();
+        Jedis jedis = new Jedis("localhost", 6379);
+        User user = JSONObject.parseObject(jedis.get(CacheConstant.USER_INFO_KEY), User.class);
+        List<UserBookEntity> userBookEntityList = userBookRepository.findAllByUserId(user.getId());
+        List<Order> orderList = new ArrayList<>();
+        for (UserBookEntity userBookEntity : userBookEntityList) {
+            Order order = new Order();
+            order.setId(userBookEntity.getId());
+            order.setBookLong(Double.valueOf(String.format("%.1s", userBookEntity.getBookLong()/60)));
+            CourtEntity courtEntity = courtRepository.getOne(userBookEntity.getCourtId());
+            if (courtEntity != null) {
+                Optional<ArenaEntity> arenaEntityOptional = arenaRepository.findById(courtEntity.getArenaId());
+                if (arenaEntityOptional.isPresent()) {
+                    order.setArenaCourt(arenaEntityOptional.get().getName() + "(" + courtEntity.getCourtName() + ")");
+                }
+            }
+            order.setMoney(Double.valueOf(String.format("%.1s", userBookEntity.getMoney())));
+            order.setOrderTime(SystemUtils.formatDate(userBookEntity.getBookTime()));
+            orderList.add(order);
+        }
+        response.setOrderList(orderList);
+        return response;
+    }
 }

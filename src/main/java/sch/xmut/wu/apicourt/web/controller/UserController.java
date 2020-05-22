@@ -19,6 +19,7 @@ import sch.xmut.wu.apicourt.http.request.UserBookRequest;
 import sch.xmut.wu.apicourt.http.request.UserCollectRequest;
 import sch.xmut.wu.apicourt.http.request.UserRequest;
 import sch.xmut.wu.apicourt.http.response.BaseResponse;
+import sch.xmut.wu.apicourt.http.response.UserBookResponse;
 import sch.xmut.wu.apicourt.http.response.UserCollectResponse;
 import sch.xmut.wu.apicourt.service.UserService;
 import sch.xmut.wu.apicourt.service.UserTokenManager;
@@ -69,7 +70,12 @@ public class UserController {
         return userService.collectList();
     }
 
-
+    //用订单列表
+    @PostMapping(value = "/order-list")
+    @ResponseBody
+    public UserBookResponse orderList() {
+        return userService.orderList();
+    }
 
     @PostMapping("login")
     @ResponseBody
