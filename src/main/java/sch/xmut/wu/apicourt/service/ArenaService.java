@@ -19,6 +19,7 @@ import sch.xmut.wu.apicourt.entity.ApiOssEntity;
 import sch.xmut.wu.apicourt.entity.ArenaEntity;
 import sch.xmut.wu.apicourt.entity.CourtEntity;
 import sch.xmut.wu.apicourt.entity.ArenaCommentEntity;
+import sch.xmut.wu.apicourt.entity.UserCollectEntity;
 import sch.xmut.wu.apicourt.entity.UserEntity;
 import sch.xmut.wu.apicourt.http.request.ArenaRequest;
 import sch.xmut.wu.apicourt.http.response.ArenaResponse;
@@ -34,6 +35,7 @@ import sch.xmut.wu.apicourt.repository.ApiOssRepository;
 import sch.xmut.wu.apicourt.repository.ArenaRepository;
 import sch.xmut.wu.apicourt.repository.CourtRepository;
 import sch.xmut.wu.apicourt.repository.ArenaCommentRepository;
+import sch.xmut.wu.apicourt.repository.UserCollectRepository;
 import sch.xmut.wu.apicourt.repository.UserRepository;
 import sch.xmut.wu.apicourt.utils.SystemUtils;
 
@@ -65,6 +67,8 @@ public class ArenaService {
     private ArenaCommentRepository arenaCommentRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private UserCollectRepository userCollectRepository;
 
     public ArenaResponse list(ArenaRequest request) {
         ArenaResponse response = new ArenaResponse();
@@ -153,12 +157,21 @@ public class ArenaService {
     }
 
     public ArenaResponse detail(ArenaRequest request) {
+        Jedis jedis = new Jedis("localhost", 6379);
+        User user = JSONObject.parseObject(jedis.get(CacheConstant.USER_INFO_KEY), User.class);
         ArenaResponse response = new ArenaResponse();
         Optional<ArenaEntity> arenaEntityOptional = arenaRepository.findById(request.getArenaId());
         if (arenaEntityOptional.isPresent()) {
             Arena arena = new Arena();
             BeanUtils.copyProperties(arenaEntityOptional.get(), arena);
             buildCommon(arena);
+            List<UserCollectEntity> userCollectEntityList = userCollectRepository.findAllByUserId(user.getId());
+            for (UserCollectEntity userCollectEntity : userCollectEntityList) {
+                if (arena.getId() == userCollectEntity.getArenaId()) {
+                    response.setCollectStatus(true);
+                    break;
+                }
+            }
             response.setArena(arena);
         }
         List<CourtEntity> courtEntityList = courtRepository.findAllByArenaId(request.getArenaId());

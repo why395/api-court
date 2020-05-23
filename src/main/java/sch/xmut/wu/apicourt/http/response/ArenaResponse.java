@@ -20,6 +20,8 @@ public class ArenaResponse extends BaseResponse {
     private List<Court> courtList;
     @JsonProperty("comment_list")
     private List<ArenaComment> arenaCommentList;
+    @JsonProperty("collect_status")
+    private Boolean collectStatus = false;
 
     public List<Arena> getArenaList() {
         return arenaList;
@@ -51,5 +53,13 @@ public class ArenaResponse extends BaseResponse {
 
     public void setArenaCommentList(List<ArenaComment> arenaCommentList) {
         this.arenaCommentList = arenaCommentList;
+    }
+
+    public Boolean getCollectStatus() {
+        return collectStatus;
+    }
+
+    public void setCollectStatus(Boolean collectStatus) {
+        this.collectStatus = collectStatus;
     }
 }
