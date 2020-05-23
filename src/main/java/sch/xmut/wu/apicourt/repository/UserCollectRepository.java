@@ -9,4 +9,5 @@ import java.util.List;
  */
 public interface UserCollectRepository extends JpaRepository<UserCollectEntity, Integer> {
     List<UserCollectEntity> findAllByUserId(Integer userId);
+    UserCollectEntity findByUserIdAndArenaId(Integer userId, Integer arenaId);
 }

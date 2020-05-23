@@ -136,7 +136,7 @@ public class ArenaService {
         }
     }
 
-    private void buildCommon(Arena arena) {
+    public void buildCommon(Arena arena) {
         List<CourtEntity> courtEntityList = courtRepository.findAllByArenaId(arena.getId());//查询该球馆的所有球场
         if (!CollectionUtils.isEmpty(courtEntityList)) {
             Double countTemp1 = 0.0;

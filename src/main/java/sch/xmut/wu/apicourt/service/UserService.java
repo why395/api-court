@@ -1,6 +1,7 @@
 package sch.xmut.wu.apicourt.service;
 
 import com.alibaba.fastjson.JSONObject;
+import net.bytebuddy.asm.Advice;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -52,6 +53,8 @@ public class UserService {
     private ArenaRepository arenaRepository;
     @Autowired
     private CourtRepository courtRepository;
+    @Autowired
+    private ArenaService arenaService;
 
     public BaseResponse saveUserInfo(UserRequest request) {
         UserEntity userEntity = new UserEntity();
@@ -86,6 +89,14 @@ public class UserService {
         return new BaseResponse();
     }
 
+    public BaseResponse removeCollect(Integer id) {
+        Jedis jedis = new Jedis("localhost", 6379);
+        User user = JSONObject.parseObject(jedis.get(CacheConstant.USER_INFO_KEY), User.class);
+        UserCollectEntity userCollectEntity = userCollectRepository.findByUserIdAndArenaId(user.getId(), id);
+        userCollectRepository.delete(userCollectEntity);
+        return new BaseResponse();
+    }
+
     public UserCollectResponse collectList() {
         UserCollectResponse response = new UserCollectResponse();
         List<Arena> arenaList = new ArrayList<>();
@@ -98,6 +109,7 @@ public class UserService {
             if (arenaEntity.isPresent()) {
                 BeanUtils.copyProperties(arenaEntity.get(), arena);
             }
+            arenaService.buildCommon(arena);
             arenaList.add(arena);
         }
         response.setArenaList(arenaList);

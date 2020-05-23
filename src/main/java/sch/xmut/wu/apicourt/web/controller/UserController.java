@@ -6,9 +6,11 @@ import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import redis.clients.jedis.Jedis;
 import sch.xmut.wu.apicourt.constant.CacheConstant;
@@ -23,9 +25,7 @@ import sch.xmut.wu.apicourt.http.response.UserBookResponse;
 import sch.xmut.wu.apicourt.http.response.UserCollectResponse;
 import sch.xmut.wu.apicourt.service.UserService;
 import sch.xmut.wu.apicourt.service.UserTokenManager;
-
 import javax.servlet.http.HttpServletRequest;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -61,6 +61,13 @@ public class UserController {
     @ResponseBody
     public BaseResponse collectArena(@RequestBody UserCollectRequest request) {
         return userService.collectArena(request);
+    }
+
+    //移除收藏
+    @GetMapping("/remove-collect")
+    @ResponseBody
+    public BaseResponse removeCollect(@RequestParam("arena_id") Integer id) {
+        return userService.removeCollect(id);
     }
 
     //收藏的球馆列表
