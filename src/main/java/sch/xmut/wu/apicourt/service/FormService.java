@@ -2,6 +2,7 @@ package sch.xmut.wu.apicourt.service;
 
 import com.alibaba.fastjson.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import redis.clients.jedis.Jedis;
@@ -67,7 +68,7 @@ public class FormService {
         UserEntity userEntity = userRepository.findById(formEntity.getUserId()).get();
         form.setPortrait(userEntity.getPortrait());
         form.setUserName(userEntity.getUserName());
-        List<FormCommentEntity> formCommentEntityList = formCommentRepository.findAllByFormId(formEntity.getId());
+        List<FormCommentEntity> formCommentEntityList = formCommentRepository.findAllByFormIdOrderByCommentTimeDesc(formEntity.getId());
         List<FormComment> formCommentList = new ArrayList<>();
         for (FormCommentEntity formCommentEntity : formCommentEntityList) {
             FormComment formComment = new FormComment();
@@ -99,17 +100,18 @@ public class FormService {
     public FormResponse formList() {
         FormResponse response = new FormResponse();
         List<Form> forms = new ArrayList<>();
-        List<FormEntity> formEntityList = formRepository.findAll();
+        List<FormEntity> formEntityList = formRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
         for (FormEntity formEntity : formEntityList) {
             Form form = new Form();
             UserEntity userEntity = userRepository.findById(formEntity.getUserId()).get();
+            form.setId(formEntity.getId());
             form.setUserName(userEntity.getUserName());
             form.setPortrait(userEntity.getPortrait());
             form.setCreateTime(SystemUtils.formatDate(formEntity.getCreateTime()));
             form.setContent(formEntity.getContent());
             form.setTitle(formEntity.getTitle());
             form.setCover(formEntity.getCover());
-            List<FormCommentEntity> formCommentEntityList = formCommentRepository.findAllByFormId(formEntity.getId());
+            List<FormCommentEntity> formCommentEntityList = formCommentRepository.findAllByFormIdOrderByCommentTimeDesc(formEntity.getId());
             form.setCommentNumber(String.valueOf(formCommentEntityList.size()));
             forms.add(form);
         }

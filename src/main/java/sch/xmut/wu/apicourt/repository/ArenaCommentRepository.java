@@ -5,5 +5,5 @@ import sch.xmut.wu.apicourt.entity.ArenaCommentEntity;
 import java.util.List;
 
 public interface ArenaCommentRepository extends JpaRepository<ArenaCommentEntity, Integer> {
-    List<ArenaCommentEntity> findAllByArenaId(Integer arenaId);
+    List<ArenaCommentEntity> findAllByArenaIdOrderByCommentTimeDesc(Integer arenaId);
 }

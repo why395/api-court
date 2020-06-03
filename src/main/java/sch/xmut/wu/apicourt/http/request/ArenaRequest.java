@@ -9,7 +9,7 @@ public class ArenaRequest {
     @JsonProperty("arena_id")
     private Integer arenaId;
     @JsonProperty("list_type")
-    private Integer listType;   //球馆列表 0:今日推荐 1：综合 2：评分 3：价格
+    private Integer listType;   //球馆列表 0:今日推荐 1：综合 2：距离 3：价格
     @JsonProperty("arena_name")
     private String arenaName;
     @JsonProperty("cover_image")

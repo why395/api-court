@@ -10,7 +10,7 @@ public class UserBookRequest {
     @JsonProperty("court_id")
     private Integer courtId;
     @JsonProperty("book_time")
-    private Date bookTime;
+    private String bookTime;
     @JsonProperty("book_long")
     private Double bookLong;
     @JsonProperty("money")
@@ -26,11 +26,11 @@ public class UserBookRequest {
         this.courtId = courtId;
     }
 
-    public Date getBookTime() {
+    public String getBookTime() {
         return bookTime;
     }
 
-    public void setBookTime(Date bookTime) {
+    public void setBookTime(String bookTime) {
         this.bookTime = bookTime;
     }
 

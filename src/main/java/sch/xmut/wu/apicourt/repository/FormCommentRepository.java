@@ -6,5 +6,5 @@ import sch.xmut.wu.apicourt.entity.FormCommentEntity;
 import java.util.List;
 
 public interface FormCommentRepository extends JpaRepository<FormCommentEntity, Integer> {
-    List<FormCommentEntity> findAllByFormId(Integer formId);
+    List<FormCommentEntity> findAllByFormIdOrderByCommentTimeDesc(Integer formId);
 }

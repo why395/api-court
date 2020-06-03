@@ -11,6 +11,6 @@ import java.util.List;
  * Created by wu on 2020/04/13
  */
 public interface UserBookRepository extends JpaRepository<UserBookEntity, Integer> {
-    List<UserBookEntity> findAllByUserId(Integer userId);
+    List<UserBookEntity> findAllByUserIdOrderByIdDesc(Integer userId);
     Page<UserBookEntity> findAll(Pageable pageable);
 }

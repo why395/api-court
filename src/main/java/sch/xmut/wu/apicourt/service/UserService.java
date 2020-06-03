@@ -33,10 +33,9 @@ import sch.xmut.wu.apicourt.repository.UserCollectRepository;
 import sch.xmut.wu.apicourt.repository.UserRepository;
 import sch.xmut.wu.apicourt.utils.SystemUtils;
 import javax.persistence.criteria.*;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * Created by wu on 2020/04/13
@@ -68,11 +67,13 @@ public class UserService {
         return new BaseResponse();
     }
 
-    public BaseResponse book(UserBookRequest request) {
+    public BaseResponse book(UserBookRequest request) throws ParseException {
         Jedis jedis = new Jedis("localhost", 6379);
         User user = JSONObject.parseObject(jedis.get(CacheConstant.USER_INFO_KEY), User.class);
         UserBookEntity userBookEntity = new UserBookEntity();
         BeanUtils.copyProperties(request, userBookEntity);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        userBookEntity.setBookTime(simpleDateFormat.parse(request.getBookTime()));
         userBookEntity.setUserId(user.getId());
         userBookRepository.save(userBookEntity);
         return new BaseResponse();
@@ -183,12 +184,12 @@ public class UserService {
         UserBookResponse response = new UserBookResponse();
         Jedis jedis = new Jedis("localhost", 6379);
         User user = JSONObject.parseObject(jedis.get(CacheConstant.USER_INFO_KEY), User.class);
-        List<UserBookEntity> userBookEntityList = userBookRepository.findAllByUserId(user.getId());
+        List<UserBookEntity> userBookEntityList = userBookRepository.findAllByUserIdOrderByIdDesc(user.getId());
         List<Order> orderList = new ArrayList<>();
         for (UserBookEntity userBookEntity : userBookEntityList) {
             Order order = new Order();
             order.setId(userBookEntity.getId());
-            order.setBookLong(Double.valueOf(String.format("%.1s", userBookEntity.getBookLong()/60)));
+            order.setBookLong(userBookEntity.getBookLong()/60);
             CourtEntity courtEntity = courtRepository.getOne(userBookEntity.getCourtId());
             if (courtEntity != null) {
                 Optional<ArenaEntity> arenaEntityOptional = arenaRepository.findById(courtEntity.getArenaId());
@@ -196,11 +197,26 @@ public class UserService {
                     order.setArenaCourt(arenaEntityOptional.get().getName() + "(" + courtEntity.getCourtName() + ")");
                 }
             }
-            order.setMoney(Double.valueOf(String.format("%.1s", userBookEntity.getMoney())));
+            order.setMoney(userBookEntity.getMoney());
             order.setOrderTime(SystemUtils.formatDate(userBookEntity.getBookTime()));
             orderList.add(order);
         }
         response.setOrderList(orderList);
+        return response;
+    }
+
+    public BaseResponse courtDetail(String date, Integer id) throws ParseException {
+        BaseResponse response = new BaseResponse();
+        CourtEntity courtEntity = courtRepository.findById(id).get();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        Date bookDate = simpleDateFormat.parse(date);
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(bookDate);
+        if(cal.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY || cal.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY){
+            response.setVo(courtEntity.getRentWeekend());
+        } else {
+            response.setVo(courtEntity.getRentWork());
+        }
         return response;
     }
 }

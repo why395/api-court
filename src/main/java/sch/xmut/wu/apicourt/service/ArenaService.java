@@ -183,7 +183,7 @@ public class ArenaService {
         }
         response.setCourtList(courtList);
         List<ArenaComment> arenaCommentList = new ArrayList<>();
-        List<ArenaCommentEntity> arenaCommentEntityList = arenaCommentRepository.findAllByArenaId(request.getArenaId());
+        List<ArenaCommentEntity> arenaCommentEntityList = arenaCommentRepository.findAllByArenaIdOrderByCommentTimeDesc(request.getArenaId());
         for (ArenaCommentEntity arenaCommentEntity : arenaCommentEntityList) {
             ArenaComment arenaComment = new ArenaComment();
             arenaComment.setUserId(arenaCommentEntity.getUserId());

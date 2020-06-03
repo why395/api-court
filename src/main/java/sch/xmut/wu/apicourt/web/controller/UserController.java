@@ -26,6 +26,7 @@ import sch.xmut.wu.apicourt.http.response.UserCollectResponse;
 import sch.xmut.wu.apicourt.service.UserService;
 import sch.xmut.wu.apicourt.service.UserTokenManager;
 import javax.servlet.http.HttpServletRequest;
+import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -52,7 +53,7 @@ public class UserController {
     //预定球场 request：court_id、book_time、book_long、money
     @PostMapping(value = "/book-court")
     @ResponseBody
-    public BaseResponse book(@RequestBody UserBookRequest request) {
+    public BaseResponse book(@RequestBody UserBookRequest request) throws ParseException {
         return userService.book(request);
     }
 
@@ -82,6 +83,13 @@ public class UserController {
     @ResponseBody
     public UserBookResponse orderList() {
         return userService.orderList();
+    }
+
+    //场地价格 data:预定日期  id:球场id
+    @GetMapping(value = "/court-detail")
+    @ResponseBody
+    public BaseResponse courtDetail(@RequestParam String date, @RequestParam Integer id) throws ParseException {
+        return userService.courtDetail(date, id);
     }
 
     @PostMapping("login")
