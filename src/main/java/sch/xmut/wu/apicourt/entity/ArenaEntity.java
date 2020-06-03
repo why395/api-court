@@ -44,6 +44,12 @@ public class ArenaEntity implements Serializable {
     private Date endTime;
     @Column(name = "is_recommend")
     private Integer isRecommend = RECOMMEND_NO;
+    @Column(name = "jingdu")
+    private Double jingdu;
+    @Column(name = "weidu")
+    private Double weidu;
+    @Column(name = "notice")
+    private String notice;
 
     public Integer getId() {
         return id;
@@ -115,5 +121,29 @@ public class ArenaEntity implements Serializable {
 
     public void setIsRecommend(Integer isRecommend) {
         this.isRecommend = isRecommend;
+    }
+
+    public Double getJingdu() {
+        return jingdu;
+    }
+
+    public void setJingdu(Double jingdu) {
+        this.jingdu = jingdu;
+    }
+
+    public Double getWeidu() {
+        return weidu;
+    }
+
+    public void setWeidu(Double weidu) {
+        this.weidu = weidu;
+    }
+
+    public String getNotice() {
+        return notice;
+    }
+
+    public void setNotice(String notice) {
+        this.notice = notice;
     }
 }

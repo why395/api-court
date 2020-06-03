@@ -17,6 +17,8 @@ public class ArenaRequest {
     @JsonProperty("boss_mobile")
     private String bossMobile;
     private String address;
+    private Double jingdu;
+    private Double weidu;
 
     public Integer getArenaId() {
         return arenaId;
@@ -64,5 +66,21 @@ public class ArenaRequest {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public Double getJingdu() {
+        return jingdu;
+    }
+
+    public void setJingdu(Double jingdu) {
+        this.jingdu = jingdu;
+    }
+
+    public Double getWeidu() {
+        return weidu;
+    }
+
+    public void setWeidu(Double weidu) {
+        this.weidu = weidu;
     }
 }

@@ -38,7 +38,7 @@ import sch.xmut.wu.apicourt.repository.ArenaCommentRepository;
 import sch.xmut.wu.apicourt.repository.UserCollectRepository;
 import sch.xmut.wu.apicourt.repository.UserRepository;
 import sch.xmut.wu.apicourt.utils.SystemUtils;
-
+import java.awt.geom.Point2D;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -79,7 +79,7 @@ public class ArenaService {
         } else {
             arenaEntityList = arenaRepository.findAll();
         }
-        buildVoByArenaEntity(arenaEntityList, arenaList);
+        buildVoByArenaEntity(arenaEntityList, arenaList, request);
         if (request.getListType() == 0) {
             response.setArenaList(arenaList);
             return response;
@@ -100,11 +100,11 @@ public class ArenaService {
             Collections.sort(arenaList, new Comparator<Arena>() {
                 @Override
                 public int compare(Arena o1, Arena o2) {
-                    double diff = o1.getSingleScore() - o2.getSingleScore();
+                    double diff = o1.getDistance() - o2.getDistance();
                     if (diff > 0.0) {
-                        return -1;
-                    } else if (diff < 0.0) {
                         return 1;
+                    } else if (diff < 0.0) {
+                        return -1;
                     }
                     return 0;
                 }
@@ -127,11 +127,16 @@ public class ArenaService {
         return response;
     }
 
-    public void buildVoByArenaEntity(List<ArenaEntity> arenaEntityList, List<Arena> arenaList) {
+    public void buildVoByArenaEntity(List<ArenaEntity> arenaEntityList, List<Arena> arenaList, ArenaRequest request) {
         for (ArenaEntity arenaEntity : arenaEntityList) {
             Arena arena = new Arena();
             BeanUtils.copyProperties(arenaEntity, arena);
             buildCommon(arena);
+            //计算球馆距离
+            Point2D point2D = new Point2D.Double(request.getJingdu(), request.getWeidu());
+            Point2D point2D1 = new Point2D.Double(arenaEntity.getJingdu(), arenaEntity.getWeidu());
+            arena.setDistance(SystemUtils.getDistance(point2D, point2D1));
+            arena.setDistanceStr("距离约" + SystemUtils.getDistance(point2D, point2D1) + "km");
             arenaList.add(arena);
         }
     }
@@ -172,6 +177,10 @@ public class ArenaService {
                     break;
                 }
             }
+            //计算球馆距离
+            Point2D point2D = new Point2D.Double(request.getJingdu(), request.getWeidu());
+            Point2D point2D1 = new Point2D.Double(arenaEntityOptional.get().getJingdu(), arenaEntityOptional.get().getWeidu());
+            arena.setDistanceStr("距离约" + SystemUtils.getDistance(point2D, point2D1) + "km");
             response.setArena(arena);
         }
         List<CourtEntity> courtEntityList = courtRepository.findAllByArenaId(request.getArenaId());
@@ -204,7 +213,7 @@ public class ArenaService {
         ArenaResponse response = new ArenaResponse();
         List<ArenaEntity> arenaEntityList = arenaRepository.findAllByNameLike(request.getArenaName());
         List<Arena> arenaList = new ArrayList<>();
-        buildVoByArenaEntity(arenaEntityList, arenaList);
+        buildVoByArenaEntity(arenaEntityList, arenaList, request);
         response.setArenaList(arenaList);
         return response;
     }

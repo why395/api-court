@@ -8,6 +8,7 @@ import java.util.Date;
 /**
  * Created by wu on 2020/04/13
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Arena implements Serializable {
     private Integer id;
     @JsonProperty("boss_mobile")
@@ -22,23 +23,21 @@ public class Arena implements Serializable {
     @JsonProperty("end_time")
     private Date endTime;
     @JsonProperty("is_recommend")
-    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Integer isRecommend;
     @JsonProperty("total_score")    //综合
-    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Double totalScore;
     @JsonProperty("single_score")    //评分
-    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Double singleScore;
     @JsonProperty("price")    //价格
-    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Integer price;
     @JsonProperty("status_str")
-    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String statusStr;
     @JsonProperty("recommend_str")
-    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String recommendStr;
+    private String notice;
+    private double distance;
+    @JsonProperty("distance_str")
+    private String distanceStr;
 
     public Integer getId() {
         return id;
@@ -150,5 +149,29 @@ public class Arena implements Serializable {
 
     public void setRecommendStr(String recommendStr) {
         this.recommendStr = recommendStr;
+    }
+
+    public String getNotice() {
+        return notice;
+    }
+
+    public void setNotice(String notice) {
+        this.notice = notice;
+    }
+
+    public double getDistance() {
+        return distance;
+    }
+
+    public void setDistance(double distance) {
+        this.distance = distance;
+    }
+
+    public String getDistanceStr() {
+        return distanceStr;
+    }
+
+    public void setDistanceStr(String distanceStr) {
+        this.distanceStr = distanceStr;
     }
 }

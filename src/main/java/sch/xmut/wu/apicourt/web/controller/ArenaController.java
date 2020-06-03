@@ -22,30 +22,24 @@ public class ArenaController {
     @Autowired
     private ArenaService arenaService;
 
-    //球馆列表 request: list_type
+    //球馆列表 request: list_type, weidu, jingdu
     @PostMapping("/list")
     @ResponseBody
     public ArenaResponse list(@RequestBody ArenaRequest request) {
         return arenaService.list(request);
     }
 
-    //球馆详情 request: arena_id
+    //球馆详情 request: arena_id,weidu,jingdu
     @PostMapping("/detail")
     @ResponseBody
     public ArenaResponse detail(@RequestBody ArenaRequest request) {
         return arenaService.detail(request);
     }
 
-    //球馆列表查询 request: arena_name
+    //球馆列表查询 request: arena_name,weidu,jingdu
     @PostMapping("/search")
     @ResponseBody
     public ArenaResponse search(@RequestBody ArenaRequest request) {
-        return arenaService.search(request);
-    }
-
-    @PostMapping("/collect")
-    @ResponseBody
-    public ArenaResponse collect(@RequestBody ArenaRequest request) {
         return arenaService.search(request);
     }
 
