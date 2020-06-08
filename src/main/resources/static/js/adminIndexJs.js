@@ -4,6 +4,7 @@ $(function () {
 var adminIndexJs = {
     bindEvent: function () {
         adminIndexJs.event.imageUpload();
+        adminIndexJs.event.imageUpload2();
         adminIndexJs.event.userList();
     },
     event: {
@@ -22,6 +23,28 @@ var adminIndexJs = {
                     , done: function (res) {
                         layer.closeAll('loading');
                         $("#add-cover-img").attr('src', res.image_url);
+                    }
+                    , error: function (index, upload) {
+                        layer.msg("错误");
+                    }
+                });
+            });
+        },
+        imageUpload2: function() {
+            layui.use('upload', function () {
+                var $ = layui.jquery
+                    , upload = layui.upload;
+                //普通图片上传
+                upload.render({
+                    elem: '#add-cover-btn-2'
+                    , url: '/admin/image-upload-oss'
+                    , accept: 'images'
+                    , before: function () {
+                        layer.load();
+                    }
+                    , done: function (res) {
+                        layer.closeAll('loading');
+                        $("#add-cover-img-2").attr('src', res.image_url);
                     }
                     , error: function (index, upload) {
                         layer.msg("错误");
@@ -250,6 +273,23 @@ var adminIndexJs = {
                 });
             });
         },
+        addCourt: function () {
+            layui.use('layer', function (layer) {
+                layer.open({
+                    type: 1,
+                    title: '新增场地',
+                    shift: 7,
+                    area: 'auto',
+                    maxWidth: 1000,
+                    maxHeight: 800,
+                    shadeClose: true,
+                    content: $("#add-court-panel"),
+                    end: function () {
+                        $("#add-court-panel").css("display", "none");
+                    }
+                });
+            });
+        },
         addArenaBtn: function () {
             layer.close(layer.index);
             var data = {};
@@ -272,6 +312,34 @@ var adminIndexJs = {
                         layer.msg('添加球馆失败');
                     }
                     layer.closeAll();
+                },
+                error: function () {
+                    layer.msg('数据异常');
+                    layer.closeAll();
+                }
+            })
+        },
+        addCourtBtn: function () {
+            layer.close(layer.index);
+            var data = {};
+            data.arena_id = $("#add-id").val();
+            data.court_name = $("#add-court-name").val();
+            data.cover_image = $("#add-cover-img-2").attr("src");
+            data.rent_work = $("#add-rent-work").val();
+            data.rent_weekend = $("#add-rent-weekend").val();
+            $.ajax({
+                url: '/admin/court-add',
+                type: 'post',
+                data: JSON.stringify(data),
+                contentType: 'application/json',
+                success: function (result) {
+                    layer.closeAll();
+                    if (result.status_code == 200) {
+                        layer.msg('添加场地成功');
+                        adminIndexJs.method.courtList();
+                    } else {
+                        layer.msg('添加场地失败');
+                    }
                 },
                 error: function () {
                     layer.msg('数据异常');

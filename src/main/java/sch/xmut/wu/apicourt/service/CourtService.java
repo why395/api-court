@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import sch.xmut.wu.apicourt.entity.ArenaEntity;
 import sch.xmut.wu.apicourt.entity.CourtEntity;
+import sch.xmut.wu.apicourt.http.request.CourtRequest;
 import sch.xmut.wu.apicourt.http.response.BaseResponse;
 import sch.xmut.wu.apicourt.http.response.LayerResponse;
 import sch.xmut.wu.apicourt.http.vo.Court;
@@ -44,6 +45,16 @@ public class CourtService {
     public BaseResponse courtDelete(Integer courtId) {
         CourtEntity courtEntity = courtRepository.findById(courtId).get();
         courtEntity.setStatus(CourtEntity.STATUS_DELETE);
+        courtRepository.save(courtEntity);
+        return new BaseResponse();
+    }
+
+    public BaseResponse courtAdd(CourtRequest courtRequest) {
+        CourtEntity courtEntity = new CourtEntity();
+        BeanUtils.copyProperties(courtRequest, courtEntity);
+        courtEntity.setStatus(CourtEntity.STATUS_BOOK);
+        courtEntity.setArenaId(courtRequest.getArenaId());
+        courtEntity.setScore(4.5);
         courtRepository.save(courtEntity);
         return new BaseResponse();
     }

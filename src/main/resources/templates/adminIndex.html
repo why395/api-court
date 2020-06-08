@@ -72,17 +72,9 @@
         </div>
         <!-- 场地列表 -->
         <div class="layui-hide" style="padding: 15px;" id="court-list">
-            <div class="layui-form">
-                场地ID
-                <div class="layui-inline">
-                    <input class="layui-input" id="search-court-id" autocomplete="off">
-                </div>
-                球馆名称
-                <div class="layui-inline">
-                    <input class="layui-input" id="search-arena-name" autocomplete="off">
-                </div>
-                <button class="layui-btn" data-type="reload" onclick=" ">搜索</button>
-            </div>
+            <button class="layui-btn" onclick="adminIndexJs.method.addCourt();">
+                <i class="layui-icon">&#xe608;</i> 新增场地
+            </button>
             <table id="court-list-table" lay-filter="court-list-table-fit"></table>
             <script type="text/html" id="court-list-table-operate">
                 <a class="layui-btn layui-btn-sm layui-btn-danger" lay-event="del">下架</a>
@@ -153,6 +145,59 @@
         <div class="layui-form-item">
             <div class="layui-input-inline" style="margin:0 100px;">
                 <button class="layui-btn" onclick="adminIndexJs.method.addArenaBtn();">
+                    添加
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="add-court-panel" style="display: none;">
+    <div class='layui-form'>
+        <div class="layui-form-item">
+            <label class="layui-form-label">球馆id</label>
+            <div class="layui-input-inline">
+                <input id="add-id" required lay-verify="required" placeholder="请输入球馆ID"
+                       autocomplete="off" class="layui-input">
+            </div>
+            <div class="layui-form-mid layui-word-aux">必填</div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">场地名称</label>
+            <div class="layui-input-inline">
+                <input id="add-court-name" required lay-verify="required" placeholder="请输入场地名称"
+                       autocomplete="off" class="layui-input">
+            </div>
+            <div class="layui-form-mid layui-word-aux">必填</div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">工作日租金</label>
+            <div class="layui-input-inline">
+                <input type="" id="add-rent-work" required lay-verify="required" placeholder="请输入工作日租金"
+                       autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">节假日租金</label>
+            <div class="layui-input-inline">
+                <input type="" id="add-rent-weekend" required lay-verify="required" placeholder="请输入节假日租金"
+                       autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">封面图:</label>
+            <div class="layui-upload">
+                <button type="button" class="layui-btn" id="add-cover-btn-2">上传图片</button>
+                <div class="layui-input-inline" style="width: 320px;">
+                    <div class="layui-upload-list">
+                        <img class="layui-upload-img" id="add-cover-img-2"
+                             style="margin:0 100px;width: 100px;height: 100px; float: left;">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-inline" style="margin:0 100px;">
+                <button class="layui-btn" onclick="adminIndexJs.method.addCourtBtn();">
                     添加
                 </button>
             </div>

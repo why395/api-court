@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import sch.xmut.wu.apicourt.http.request.ArenaRequest;
+import sch.xmut.wu.apicourt.http.request.CourtRequest;
 import sch.xmut.wu.apicourt.http.request.UserRequest;
 import sch.xmut.wu.apicourt.http.response.BaseResponse;
 import sch.xmut.wu.apicourt.http.response.LayerResponse;
@@ -101,5 +102,11 @@ public class AdminController {
     @ResponseBody
     public BaseResponse courtDelete(@RequestParam Integer courtId) {
         return courtService.courtDelete(courtId);
+    }
+
+    @PostMapping("/court-add")
+    @ResponseBody
+    public BaseResponse courtAdd(@RequestBody CourtRequest courtRequest) {
+        return courtService.courtAdd(courtRequest);
     }
 }
