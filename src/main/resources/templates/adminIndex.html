@@ -91,6 +91,9 @@
         <!-- 订单列表 -->
         <div class="layui-hide" style="padding: 15px;" id="order-list">
             <table id="order-list-table" lay-filter="order-list-table-fit"></table>
+            <script type="text/html" id="court-list-table-operate">
+                <a class="layui-btn layui-btn-sm layui-btn-danger" lay-event="del">删除</a>
+            </script>
         </div>
     </div>
     <div class="layui-footer">
@@ -133,6 +136,22 @@
                     </div>
                 </div>
             </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">经度</label>
+            <div class="layui-input-inline">
+                <input type="" id="add-jingdu" required lay-verify="required" placeholder="请输入球馆经度"
+                       autocomplete="off" class="layui-input">
+            </div>
+            <div class="layui-form-mid layui-word-aux">必填</div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">纬度</label>
+            <div class="layui-input-inline">
+                <input type="" id="add-weidu" required lay-verify="required" placeholder="请输入球馆纬度"
+                       autocomplete="off" class="layui-input">
+            </div>
+            <div class="layui-form-mid layui-word-aux">必填</div>
         </div>
         <div class="layui-form-item">
             <div class="layui-input-inline" style="margin:0 100px;">
