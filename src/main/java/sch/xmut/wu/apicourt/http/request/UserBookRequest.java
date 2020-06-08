@@ -7,6 +7,7 @@ import java.util.Date;
  * Created by wu on 2020/04/14
  */
 public class UserBookRequest {
+    private Integer id;
     @JsonProperty("court_id")
     private Integer courtId;
     @JsonProperty("book_time")
@@ -56,5 +57,13 @@ public class UserBookRequest {
 
     public void setUserName(String userName) {
         this.userName = userName;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 }

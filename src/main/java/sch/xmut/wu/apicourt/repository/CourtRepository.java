@@ -12,4 +12,5 @@ import java.util.List;
 public interface CourtRepository extends JpaRepository<CourtEntity, Integer> {
     List<CourtEntity> findAllByArenaId(Integer arenaId);
     Page<CourtEntity> findAll(Pageable pageable);
+    Page<CourtEntity> findAllByStatus(Pageable pageable, Integer status);
 }

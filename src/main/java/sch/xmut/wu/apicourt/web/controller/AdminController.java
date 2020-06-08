@@ -70,6 +70,13 @@ public class AdminController {
         return arenaService.arenaAdd(arenaRequest);
     }
 
+    //上架球馆
+    @GetMapping("/arena-open")
+    @ResponseBody
+    public BaseResponse arenaOpen(@RequestParam Integer arenaId) {
+        return arenaService.arenaOpen(arenaId);
+    }
+
     @GetMapping("/arena-delete")
     @ResponseBody
     public BaseResponse arenaDelete(@RequestParam Integer arenaId) {
@@ -88,5 +95,11 @@ public class AdminController {
     public LayerResponse orderList(@RequestParam("limit") Integer limit, @RequestParam("page") Integer page) {
         Pageable pageable = PageRequest.of(page - 1, limit, Sort.Direction.ASC, "id");
         return orderService.getOrderList(pageable);
+    }
+
+    @GetMapping("/court-delete")
+    @ResponseBody
+    public BaseResponse courtDelete(@RequestParam Integer courtId) {
+        return courtService.courtDelete(courtId);
     }
 }

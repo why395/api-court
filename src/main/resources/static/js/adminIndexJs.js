@@ -115,6 +115,8 @@ var adminIndexJs = {
                         , {field: 'recommend_str', title: '是否推荐', width: 100}
                         , {field: 'name', title: '球馆名称', width: 100}
                         , {field: 'address', title: '球馆地址', width: 100}
+                        , {field: 'weidu', title: '纬度', width: 100}
+                        , {field: 'jingdu', title: '经度', width: 100}
                         , {field: 'status_str', title: '状态', width: 100}
                         , {
                             field: 'cover_image', title: '封面图', width: 100, templet: function (d) {
@@ -134,7 +136,7 @@ var adminIndexJs = {
                 });
                 table.on('tool(arena-list-table-fit)', function (obj) {
                     if (obj.event === 'del') {
-                        layer.confirm('确定下架该场地？', function (index) {
+                        layer.confirm('确定下架该球馆？', function (index) {
                             $.ajax({
                                 url: '/admin/arena-delete',
                                 data: {
@@ -143,6 +145,24 @@ var adminIndexJs = {
                                 type: 'get',
                                 success: function (result) {
                                     layer.msg("下架成功");
+                                    adminIndexJs.method.arenaList();
+                                },
+                                error: function () {
+                                    layer.msg("数据请求异常");
+                                    layer.closeAll()
+                                }
+                            })
+                        })
+                    } else {
+                        layer.confirm('确定重新上架该球馆？', function (index) {
+                            $.ajax({
+                                url: '/admin/arena-open',
+                                data: {
+                                    arenaId: obj.data.id
+                                },
+                                type: 'get',
+                                success: function (result) {
+                                    layer.msg("上架成功");
                                     adminIndexJs.method.arenaList();
                                 },
                                 error: function () {
@@ -173,9 +193,9 @@ var adminIndexJs = {
                     , cols: [[ //表头
                         {field: 'id', title: 'ID', width: 70, sort: true, fixed: 'left'}
                         , {field: 'arena_name', title: '球馆名称', width: 120}
-                        , {field: 'court_name', title: '场地名称', width: 120}
-                        , {field: 'rent_work', title: '工作日租金', width: 90}
-                        , {field: 'rent_weekend', title: '节假日租金', width: 130}
+                        , {field: 'court_name', title: '场地名称', width: 200}
+                        , {field: 'rent_work', title: '工作日租金', width: 140}
+                        , {field: 'rent_weekend', title: '节假日租金', width: 140}
                         , {field: 'score', title: '评分', width: 150}
                         , {
                             field: 'cover_image', title: '封面', width: 90, templet: function (d) {
@@ -190,19 +210,22 @@ var adminIndexJs = {
                         }
                     ]]
                 });
-                table.on('tool(admin-list-table-fit)', function (obj) {
+                table.on('tool(court-list-table-fit)', function (obj) {
                     if (obj.event === 'del') {
-                        layer.confirm('确定删除该管理员？', function (index) {
-                            var dataRequest = {};
-                            dataRequest.mobile = obj.data.mobile;
+                        layer.confirm('确定下架该场地？', function (index) {
                             $.ajax({
-                                url: '/admin/admin-delete',
-                                data: JSON.stringify(dataRequest),
-                                contentType: 'application/json',
-                                type: 'post',
-                                success: function () {
-                                    layer.msg("删除成功");
-                                    adminIndexJs.method.adminList();
+                                url: '/admin/court-delete',
+                                data: {
+                                    courtId: obj.data.id
+                                },
+                                type: 'get',
+                                success: function (result) {
+                                    layer.msg("下架成功");
+                                    adminIndexJs.method.courtList();
+                                },
+                                error: function () {
+                                    layer.msg("数据请求异常");
+                                    layer.closeAll()
                                 }
                             })
                         })
@@ -234,6 +257,8 @@ var adminIndexJs = {
             data.address = $("#add-address").val();
             data.cover_image = $("#add-cover-img").attr("src");
             data.boss_mobile = $("#add-boss-mobile").val();
+            data.weidu = $("#add-weidu").val();
+            data.jingdu = $("#add-jingdu").val();
             $.ajax({
                 url: '/admin/arena-add',
                 type: 'post',
@@ -285,12 +310,12 @@ var adminIndexJs = {
                     , limits: [5, 10, 20]
                     , limit: 10
                     , cols: [[ //表头
-                        {field: 'id', title: 'ID', width: 70, sort: true, fixed: 'left'}
-                        , {field: 'user_name', title: '用户名称', width: 120}
+                        {field: 'id', title: 'ID', width: 70}
+                        , {field: 'user_name', title: '用户名称', width: 150}
                         , {field: 'court_id', title: '场地id', width: 100}
-                        , {field: 'book_time', title: '预约时间', width: 100}
-                        , {field: 'book_long', title: '预约时长', width: 100}
-                        , {field: 'money', title: '预约价格', width: 100}
+                        , {field: 'book_time', title: '预约时间', width: 300}
+                        , {field: 'book_long', title: '预约时长(单位:min)', width: 160}
+                        , {field: 'money', title: '预约价格(单位：$)', width: 160}
                     ]]
                 });
             });

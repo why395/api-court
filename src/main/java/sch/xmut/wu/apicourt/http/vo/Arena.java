@@ -38,6 +38,8 @@ public class Arena implements Serializable {
     private double distance;
     @JsonProperty("distance_str")
     private String distanceStr;
+    private Double jingdu;
+    private Double weidu;
 
     public Integer getId() {
         return id;
@@ -173,5 +175,21 @@ public class Arena implements Serializable {
 
     public void setDistanceStr(String distanceStr) {
         this.distanceStr = distanceStr;
+    }
+
+    public Double getJingdu() {
+        return jingdu;
+    }
+
+    public void setJingdu(Double jingdu) {
+        this.jingdu = jingdu;
+    }
+
+    public Double getWeidu() {
+        return weidu;
+    }
+
+    public void setWeidu(Double weidu) {
+        this.weidu = weidu;
     }
 }

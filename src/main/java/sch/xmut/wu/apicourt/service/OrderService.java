@@ -25,6 +25,7 @@ import sch.xmut.wu.apicourt.http.response.LayerResponse;
 import sch.xmut.wu.apicourt.http.vo.Court;
 import sch.xmut.wu.apicourt.repository.UserBookRepository;
 import sch.xmut.wu.apicourt.repository.UserRepository;
+import sch.xmut.wu.apicourt.utils.SystemUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,6 +45,7 @@ public class OrderService {
         for (UserBookEntity userbookEntity : userbookEntityPage) {
             UserBookRequest userbookrequest = new UserBookRequest();
             BeanUtils.copyProperties(userbookEntity, userbookrequest);
+            userbookrequest.setBookTime(SystemUtils.formatDate(userbookEntity.getBookTime()));
             Optional<UserEntity> optional = userRepository.findById(userbookEntity.getUserId());    //通过arena_id找球馆
             if (optional.isPresent()) {
                 userbookrequest.setUserName(optional.get().getUserName());

@@ -263,6 +263,14 @@ public class ArenaService {
         return new BaseResponse();
     }
 
+    public BaseResponse arenaOpen(Integer id) {
+        Optional<ArenaEntity> arenaEntityOptional = arenaRepository.findById(id);
+        ArenaEntity arenaEntity = arenaEntityOptional.get();
+        arenaEntity.setStatus(ArenaEntity.STATUS_BUSY);
+        arenaRepository.save(arenaEntity);
+        return new BaseResponse();
+    }
+
     //文件上传
     public OssImageResponse imageUploadOss(MultipartFile file) {
         OssImageResponse ossImageResponse = new OssImageResponse();
